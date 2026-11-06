@@ -1,0 +1,95 @@
+<main class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">API de clientes</p>
+      <h1>{{ title() }}</h1>
+      <p class="subtitle">Consulta, registra y elimina clientes desde una sola pantalla.</p>
+    </div>
+    <button class="secondary-button" type="button" (click)="listarClientes()" [disabled]="cargando()">
+      Actualizar lista
+    </button>
+  </header>
+
+  @if (mensaje()) {
+    <div class="alert success" role="status">{{ mensaje() }}</div>
+  }
+
+  @if (error()) {
+    <div class="alert error" role="alert">{{ error() }}</div>
+  }
+
+  <section class="content-grid">
+    <article class="card form-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Nuevo registro</p>
+          <h2>Insertar cliente</h2>
+        </div>
+      </div>
+
+      <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" name="nombre" [(ngModel)]="nuevoCliente.nombre" required />
+
+        <label for="apellido">Apellido</label>
+        <input id="apellido" name="apellido" [(ngModel)]="nuevoCliente.apellido" required />
+
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" name="telefono" [(ngModel)]="nuevoCliente.telefono" required />
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" [(ngModel)]="nuevoCliente.email" required />
+
+        <button class="primary-button" type="submit" [disabled]="clienteForm.invalid || guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar cliente' }}
+        </button>
+      </form>
+    </article>
+
+    <article class="card list-card">
+      <div class="card-heading">
+        <div>
+          <p class="eyebrow">Registros actuales</p>
+          <h2>Lista de clientes</h2>
+        </div>
+        <span class="counter">{{ clientes().length }}</span>
+      </div>
+
+      @if (cargando()) {
+        <p class="empty-state">Cargando clientes...</p>
+      } @else if (clientes().length === 0) {
+        <p class="empty-state">No hay clientes registrados.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th class="actions-column">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cliente of clientes(); track cliente.id) {
+                <tr>
+                  <td>
+                    <strong>{{ cliente.nombre }} {{ cliente.apellido }}</strong>
+                    <small>ID: {{ cliente.id }}</small>
+                  </td>
+                  <td>{{ cliente.telefono }}</td>
+                  <td>{{ cliente.email || 'No disponible' }}</td>
+                  <td class="actions-column">
+                    <button class="delete-button" type="button" (click)="eliminarCliente(cliente.id)">
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </article>
+  </section>
+</main>
